@@ -251,6 +251,9 @@
         document.getElementById('problemText').textContent = 'Không thể tải bài toán.';
     }
 }
+
+
+
         function parseGoogleSheetData(jsonData) {
     const data = jsonData.table.rows;
     return data.map(row => ({
@@ -258,6 +261,8 @@
         problem: row.c[1]?.v.replace(/\r\n|\r|\n/g, '\n') || '' // Cột đề bài
     })).filter(item => item.problem && item.index);
 }
+
+
         function displayNextProblem() {
     if (problems.length > 0) {
         // Nếu chỉ số hiện tại vượt quá số bài, quay lại bài đầu tiên (tuỳ chọn)
@@ -268,7 +273,8 @@
         // Lấy bài tập theo thứ tự
         currentProblem = problems[currentProblemIndex];
         currentProblemIndex++; // Tăng chỉ số lên bài tiếp theo
-document.getElementById('problemText').innerHTML = formatProblemText(currentProblem.problem);
+
+        document.getElementById('problemText').innerHTML = formatProblemText(currentProblem.problem);
         MathJax.typesetPromise([document.getElementById('problemText')]).catch(function (err) {
             console.error('MathJax rendering error:', err);
         });
@@ -307,6 +313,7 @@ function checkCameraAccess() {
         })
         .catch(error => console.error('Lỗi khi kiểm tra thiết bị camera:', error));
 }
+
 
         // Hàm cập nhật số bài đã làm và điểm trung bình
         function updateProgress(newScore) {
@@ -447,8 +454,7 @@ function checkCameraAccess() {
                     {
                         parts: [
                             { text: promptText },
-                            { inline_data: { mime_type: "image/jpeg", data: base64Image.replace(/^data:image\/jpeg;base64,/, '') } }
-
+                            { inline_data: { mime_type: "image/jpeg", data: base64Image } }
                         ]
                     }
                 ]
@@ -630,18 +636,13 @@ function checkCameraAccess() {
         return;
     }
 
-   if (!base64Image && (!studentFileInput?.files || studentFileInput.files.length === 0)) {
-    alert('Vui lòng chọn hoặc chụp ảnh bài làm của học sinh.');
-    return;
-}
-
+    if (!base64Image && !studentFileInput?.files?.length) {
+        alert('Vui lòng chọn hoặc chụp ảnh bài làm của học sinh.');
+        return;
+    }
 
     // Ưu tiên ảnh từ camera, nếu không có thì sử dụng ảnh tải lên từ file
-    const imageToProcess = base64Image 
-    ? base64Image 
-    : (studentFileInput.files.length > 0 ? await getBase64(studentFileInput.files[0]) : null);
-
-
+    const imageToProcess = base64Image || (studentFileInput.files.length > 0 ? await getBase64(studentFileInput.files[0]) : null);
 
     if (!imageToProcess) {
         alert('Không thể lấy ảnh bài làm. Vui lòng thử lại.');
@@ -713,6 +714,8 @@ function checkCameraAccess() {
     const captureButton = document.getElementById('captureButton');
     const canvas = document.getElementById('photoCanvas');
     const img = document.getElementById('capturedImage');
+    let base64Image = '';
+
     checkCameraAccess(); // Kiểm tra thiết bị
     startCamera(); // Bắt đầu camera
 
@@ -743,18 +746,16 @@ function checkCameraAccess() {
             .catch(error => console.error('Lỗi khi kiểm tra thiết bị camera:', error));
     }
 
-   captureButton.addEventListener('click', () => {
-    const context = canvas.getContext('2d');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Chuyển đổi sang Base64
-    base64Image = canvas.toDataURL('image/jpeg', 0.9);
-
-    console.log('Base64 từ camera:', base64Image.slice(0, 100)); // Log 100 ký tự đầu
-    console.log('Kích thước Base64:', base64Image.length);
-});
+    captureButton.addEventListener('click', () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        base64Image = canvas.toDataURL('image/png');
+        img.src = base64Image;
+        img.style.display = 'block';
+        console.log('Ảnh chụp (Base64):', base64Image);
+    });
 });
 
 

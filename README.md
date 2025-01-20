@@ -242,7 +242,7 @@ button.delete:hover {
     </script>
 </head>
 <body>
-    <h1>ÔN LYỆN TOÁN LỚP 7  - TRUNG TÂM ÁNH DƯƠNG</h1>
+    <h1>ÔN LYỆN TOÁN LỚP 6  - TRUNG TÂM ÁNH DƯƠNG</h1>
     
     <div id="loginContainer">
         <input type="text" id="studentId" placeholder="Nhập mã học sinh">

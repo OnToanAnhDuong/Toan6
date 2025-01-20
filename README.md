@@ -114,6 +114,7 @@
     border: 1px solid #ddd;
     border-radius: 5px;
 }
+
 #captureButton {
     margin-top: 10px;
     padding: 10px 20px;
@@ -215,6 +216,13 @@
 #bottomControls button:hover {
     background-color: #4cae4c;
 }
+button.delete {
+    background-color: #dc3545;
+    color: white;
+}
+button.delete:hover {
+    background-color: #c82333;
+}
 </style>
 
     <!-- Thêm MathJax -->
@@ -234,8 +242,9 @@
     </script>
 </head>
 <body>
-    <h1>ÔN TẬP TOÁN LỚP 6 - TRUNG TÂM ÁNH DƯƠNG</h1>
-        <div id="loginContainer">
+    <h1>ÔN LYỆN TOÁN LỚP 7  - TRUNG TÂM ÁNH DƯƠNG</h1>
+    
+    <div id="loginContainer">
         <input type="text" id="studentId" placeholder="Nhập mã học sinh">
         <button id="loginBtn">Đăng nhập</button>
     </div>
@@ -246,17 +255,21 @@
         <button id="selectProblemBtn">Hiển thị bài tập</button>
         <button id="randomProblemBtn">Lấy bài tập ngẫu nhiên</button>
     </div>
+
     <!-- Hàng thứ hai: Đề bài -->
     <div id="problemContainer">
         <label for="problemText">Đề bài:</label>
         <div id="problemText"></div>
     </div>
+
     <!-- Hàng thứ ba: Các nút chức năng -->
     <div id="bottomControls">
         <button id="submitBtn">Chấm Bài</button>
         <button id="hintBtn">Gợi ý</button>
+	<button id="deleteAllBtn">Xóa tất cả</button>
     </div>
   <div id="result"></div>
+         
         <label for="studentImage">Ảnh bài làm của học sinh:</label>
         <input type="file" id="studentImage" accept="image/*">
 	<label for="cameraStream">Hoặc chụp ảnh từ camera:</label>
@@ -273,8 +286,7 @@
         <img id="capturedImage" alt="Ảnh đã chụp" style="max-width: 100%; display: none;">
     </div>
 </div>
-    
-      
+          
     </div>
 
     <script>
@@ -355,7 +367,6 @@
     })).filter(item => item.problem && item.index);
 }
 
-
         function displayNextProblem() {
     if (problems.length > 0) {
         // Nếu chỉ số hiện tại vượt quá số bài, quay lại bài đầu tiên (tuỳ chọn)
@@ -391,7 +402,6 @@ function displayProblemByIndex(index) {
         document.getElementById('problemText').textContent = `Không tìm thấy bài tập với số thứ tự ${index}.`;
     }
 }
-
 
         function formatProblemText(problemText) {
             return problemText.replace(/\n/g, '<br>').replace(/([a-d]\))/g, '<br>$1');
@@ -524,7 +534,7 @@ function checkCameraAccess() {
             ${problemText}
              Hãy thực hiện các bước sau:
             1. Nhận diện và gõ lại bài làm của học sinh từ hình ảnh thành văn bản một cách chính xác, tất cả công thức Toán viết dưới dạng Latex, bọc trong dấu $, không tự suy luận nội dung hình ảnh, chỉ gõ lại chính xác các nội dung nhận diện được từ hình ảnh
-            2. Giải bài toán theo cách giải của học sinh lớp 6 học chương trình 2018 và cung cấp lời giải chi tiết cho từng phần.
+            2. Giải bài toán và cung cấp lời giải chi tiết cho từng phần, lời giải phù hợp học sinh lớp 7 học theo chương trình 2018.
             3. So sánh bài làm của học sinh với đáp án đúng, chấm chi tiết từng bước làm đến kết quả
             4. Chấm điểm bài làm của học sinh trên thang điểm 10, cho 0 điểm với bài giải không đúng yêu cầu đề bài. Giải thích chi tiết cách tính điểm cho từng phần.
             5. Đưa ra nhận xét chi tiết và đề xuất cải thiện.
@@ -537,7 +547,7 @@ function checkCameraAccess() {
             Nhận xét: [Nhận xét chi tiết]
             Đề xuất cải thiện: [Các đề xuất cụ thể]
             Chú ý:
-	    - Bài giải của học sinh không liên quan đến đề bài yêu cầu thì cho 0 điểm.
+	    - Bài làm của học sinh không khớp với đề bài thì cho 0 điểm,
             - Điểm số phải là một số từ 0 đến 10, có thể có một chữ số thập phân.
             - Hãy đảm bảo tính chính xác và khách quan trong việc chấm điểm và nhận xét.
             - Nếu có sự không nhất quán giữa bài làm và điểm số, hãy giải thích rõ lý do.
@@ -704,8 +714,6 @@ function checkCameraAccess() {
    	 }
 	}
 
-
-
         function showMessageBox(message) {
             const overlay = document.createElement('div');
             overlay.className = 'message-box-overlay';
@@ -734,7 +742,6 @@ function checkCameraAccess() {
     alert('Vui lòng chọn hoặc chụp ảnh bài làm của học sinh.');
     return;
 }
-
 
     // Ưu tiên ảnh từ camera, nếu không có thì sử dụng ảnh tải lên từ file
     const imageToProcess = base64Image || (studentFileInput.files.length > 0 ? await getBase64(studentFileInput.files[0]) : null);
@@ -796,14 +803,41 @@ function checkCameraAccess() {
             }
         });
 
-	document.getElementById('selectProblemBtn').addEventListener('click', () => {
-    	const problemIndexInput = document.getElementById('problemIndexInput').value;
-   	 if (problemIndexInput) {
-        displayProblemByIndex(problemIndexInput);
-   	 } else {
+	document.getElementById('selectProblemBtn').addEventListener('click', async () => {
+    const problemIndexInput = document.getElementById('problemIndexInput').value.trim();
+
+    // Kiểm tra xem người dùng đã nhập số thứ tự hay chưa
+    if (!problemIndexInput) {
         alert('Vui lòng nhập số thứ tự bài cần chọn.');
-    	}
-	});
+        return;
+    }
+
+    // Tìm bài tập theo số thứ tự
+    const selectedProblem = problems.find(problem => parseInt(problem.index) === parseInt(problemIndexInput));
+
+    if (selectedProblem) {
+        // Hiển thị đề bài
+        document.getElementById('problemText').innerHTML = formatProblemText(selectedProblem.problem);
+
+        // Gọi hàm generateHint() để tạo gợi ý
+        try {
+            currentHint = await generateHint(selectedProblem.problem);
+            console.log('Gợi ý cho bài tập đã chọn:', currentHint);
+        } catch (error) {
+            console.error('Lỗi khi tạo gợi ý:', error);
+            currentHint = null;
+        }
+
+        // Hiển thị nội dung MathJax
+        MathJax.typesetPromise([document.getElementById('problemText')]).catch(err => {
+            console.error('MathJax rendering error:', err);
+        });
+    } else {
+        // Không tìm thấy bài tập
+        document.getElementById('problemText').textContent = `Không tìm thấy bài tập với số thứ tự ${problemIndexInput}.`;
+    }
+});
+
 	document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('cameraStream');
     const captureButton = document.getElementById('captureButton');
@@ -867,10 +901,11 @@ captureButton.addEventListener('click', () => {
         sWidth = video.videoHeight / desiredAspectRatio;
         sx = (video.videoWidth - sWidth) / 2; // Cắt đều hai bên
     }
-
+	
     // Vẽ nội dung video lên canvas với kích thước và tỷ lệ đã tính toán
     const context = canvas.getContext('2d');
     context.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height);
+	 
 
     // Chuyển đổi canvas thành Base64 (JPEG, chất lượng 0.9)
     const base64Data = canvas.toDataURL('image/jpeg', 0.9);
@@ -886,6 +921,25 @@ if (!imageContainer.contains(img)) {
     imageContainer.appendChild(img); // Đảm bảo ảnh nằm trong `#imageContainer`
 }
 
+});
+
+document.getElementById('deleteAllBtn').addEventListener('click', () => {
+    // Xóa ảnh được hiển thị
+    const img = document.getElementById('capturedImage');
+    if (img) {
+        img.src = ''; // Đặt lại ảnh
+        img.style.display = 'none'; // Ẩn ảnh
+    }
+    base64Image = ''; // Xóa dữ liệu base64 của ảnh
+
+    // Xóa bài giải hiển thị
+    const resultDiv = document.getElementById('result');
+    if (resultDiv) {
+        resultDiv.innerHTML = ''; // Xóa nội dung bài giải
+    }
+
+    // Thông báo hành động hoàn thành
+    alert('Đã xóa tất cả ảnh và bài giải.');
 });
 
 });
@@ -1031,5 +1085,4 @@ if (!imageContainer.contains(img)) {
     </script>
 </body>
 </html>
-
 

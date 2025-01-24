@@ -43,6 +43,9 @@
             padding: 15px;
             border-radius: 5px;
         }
+	p#breadcrumb {
+    display: none;
+}
         #problemText {
             font-size: 18px;
             margin-bottom: 20px;
@@ -59,7 +62,7 @@
         }
         #randomProblemBtn, #loginBtn {
             display: block;
-            width: 50%;
+            width: 30%;
             margin-bottom: 10px;
             padding: 10px;
             background-color: #007bff;
@@ -100,6 +103,22 @@
             background-color: rgba(0,0,0,0.5);
             z-index: 999;
         }
+	#progressContainer {
+    margin-top: 20px;
+    font-size: 16px; /* Kích cỡ chữ */
+    text-align: left; /* Căn trái */
+}
+
+#progressContainer p {
+    display: flex; /* Sử dụng flexbox để căn chỉnh theo chiều ngang */
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    margin: 0; /* Loại bỏ khoảng cách mặc định của thẻ <p> */
+}
+
+#progressContainer span {
+    font-weight: bold; /* Làm đậm số liệu */
+    color: red; /* Màu đỏ cho số liệu */
+}
 	#cameraContainer {
     margin-top: 20px;
     text-align: center;
@@ -153,30 +172,37 @@
 #topControls {
     display: flex; /* Sắp xếp các phần tử trên một hàng ngang */
     justify-content: center; /* Căn giữa các phần tử */
+    align-items: center; /* Căn giữa theo chiều dọc */
     gap: 20px; /* Khoảng cách giữa các phần tử */
     margin-bottom: 20px; /* Khoảng cách dưới hàng */
+    height: auto; /* Chiều cao tự động theo phần tử con */
+    box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
 }
 
 #topControls input[type="number"] {
     width: 200px; /* Đặt chiều rộng cho khung nhập số */
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
+    height: 40px; /* Chiều cao khớp với nút */
+    padding: 5px 10px; /* Giảm padding để khớp với nút */
+    border: 1px solid #ddd; /* Viền xám nhạt */
+    border-radius: 5px; /* Bo góc nhẹ */
+    font-size: 14px; /* Cỡ chữ nhỏ hơn một chút */
+    box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
 }
 
 #topControls button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+    padding: 0 15px; /* Giảm padding để khớp chiều cao với input */
+    background-color: #007bff; /* Màu nền xanh */
+    color: white; /* Màu chữ trắng */
+    border: none; /* Loại bỏ viền */
+    border-radius: 5px; /* Bo góc nhẹ */
+    font-size: 14px; /* Cỡ chữ nhỏ hơn */
+    cursor: pointer; /* Con trỏ dạng tay */
+    height: 40px; /* Đảm bảo chiều cao khớp với input */
+    line-height: 1; /* Đảm bảo nội dung căn giữa */
 }
 
 #topControls button:hover {
-    background-color: #0056b3;
+    background-color: #0056b3; /* Màu xanh đậm hơn khi rê chuột */
 }
 
 /* Hàng thứ hai: Phần đề bài */
@@ -242,25 +268,31 @@ button.delete:hover {
     </script>
 </head>
 <body>
-    <h1>ÔN LYỆN TOÁN LỚP 6  - TRUNG TÂM ÁNH DƯƠNG</h1>
+    <h1>ÔN LYỆN TOÁN LỚP 6  - THẦY GIÁO TÔN THANH CHƯƠNG</h1>
     
     <div id="loginContainer">
         <input type="text" id="studentId" placeholder="Nhập mã học sinh">
         <button id="loginBtn">Đăng nhập</button>
     </div>
-<div id="mainContent" style="display: none;">
+   <div id="mainContent" style="display: none;">
     <!-- Hàng trên cùng: Khung nhập số và các nút liên quan -->
     <div id="topControls">
         <input type="number" id="problemIndexInput" placeholder="Nhập số thứ tự (1, 2, ...)" />
         <button id="selectProblemBtn">Hiển thị bài tập</button>
         <button id="randomProblemBtn">Lấy bài tập ngẫu nhiên</button>
+	<div id="progressContainer" style="display: none;">
+    <p>
+        Số bài: <span id="completedExercises">0</span> | 
+        Điểm TB: <span id="averageScore">0</span>
+    </p>
+</div>
     </div>
 
     <!-- Hàng thứ hai: Đề bài -->
     <div id="problemContainer">
         <label for="problemText">Đề bài:</label>
         <div id="problemText"></div>
-    </div>
+	</div>
 
     <!-- Hàng thứ ba: Các nút chức năng -->
     <div id="bottomControls">
@@ -729,7 +761,7 @@ function checkCameraAccess() {
             document.body.appendChild(overlay);
         }
 
-       document.getElementById('submitBtn').addEventListener('click', async () => {
+    document.getElementById('submitBtn').addEventListener('click', async () => {
     const problemText = document.getElementById('problemText')?.innerHTML?.trim();
     const studentFileInput = document.getElementById('studentImage');
 
@@ -738,10 +770,10 @@ function checkCameraAccess() {
         return;
     }
 
-  if (!base64Image && !studentFileInput?.files?.length) {
-    alert('Vui lòng chọn hoặc chụp ảnh bài làm của học sinh.');
-    return;
-}
+    if (!base64Image && !studentFileInput?.files?.length) {
+        alert('Vui lòng chọn hoặc chụp ảnh bài làm của học sinh.');
+        return;
+    }
 
     // Ưu tiên ảnh từ camera, nếu không có thì sử dụng ảnh tải lên từ file
     const imageToProcess = base64Image || (studentFileInput.files.length > 0 ? await getBase64(studentFileInput.files[0]) : null);
@@ -762,7 +794,54 @@ function checkCameraAccess() {
         if (submitted) {
             document.getElementById('result').innerHTML = feedback;
             MathJax.typesetPromise([document.getElementById('result')]).catch(err => console.error('MathJax rendering error:', err));
-            await updateProgress(score);
+            await updateProgress(score); // Vẫn giữ logic cập nhật nội bộ nếu có
+
+            // Thêm logic cập nhật điểm trung bình và số bài làm từ Google Sheets
+            const sheetId = '165WblAAVsv_aUyDKjrdkMSeQ5zaLiUGNoW26ZFt5KWU'; // ID Google Sheet
+            const sheetName = 'StudentProgress'; // Tên tab trong Google Sheet
+            const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}&tqx=out:json`;
+
+            // Chờ vài giây để Google Sheets kịp cập nhật
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(sheetUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const text = await response.text();
+                    const jsonDataMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+                    if (!jsonDataMatch) {
+                        throw new Error('Không thể phân tích dữ liệu từ Google Sheets.');
+                    }
+
+                    const jsonData = JSON.parse(jsonDataMatch[1]);
+                    const rows = jsonData.table.rows;
+
+                    // Tìm thông tin theo mã học sinh
+                    const studentData = rows.find(row => {
+                        const sheetId = (row.c[0]?.v || '').toString().trim();
+                        return sheetId === currentStudentId;
+                    });
+
+                    if (!studentData) {
+                        console.error(`Không tìm thấy dữ liệu cho mã học sinh: ${currentStudentId}`);
+                        return;
+                    }
+
+                    // Cập nhật số bài và điểm trung bình
+                    const completedExercises = studentData.c[2]?.v || 0; // Cột C: Số bài đã làm
+                    const averageScore = studentData.c[3]?.v || 0; // Cột D: Điểm trung bình
+
+                    document.getElementById('completedExercises').textContent = completedExercises; // Cập nhật số bài
+                    document.getElementById('averageScore').textContent = averageScore; // Cập nhật điểm trung bình
+
+                    console.log(`Số bài đã làm: ${completedExercises}, Điểm trung bình: ${averageScore}`);
+                } catch (error) {
+                    console.error('Lỗi khi tải dữ liệu từ Google Sheets:', error);
+                    alert(`Không thể tải tiến độ học tập. Chi tiết lỗi: ${error.message}`);
+                }
+            }, 3000); // Chờ 3 giây trước khi cập nhật để Google Sheets kịp xử lý
         } else {
             throw new Error('Không thể gửi dữ liệu đến Google Form.');
         }
@@ -941,6 +1020,61 @@ document.getElementById('deleteAllBtn').addEventListener('click', () => {
     // Thông báo hành động hoàn thành
     alert('Đã xóa tất cả ảnh và bài giải.');
 });
+document.getElementById('loginBtn').addEventListener('click', async () => {
+    const sheetId = '165WblAAVsv_aUyDKjrdkMSeQ5zaLiUGNoW26ZFt5KWU'; // ID Google Sheet
+    const sheetName = 'StudentProgress'; // Tên tab trong Google Sheet
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?sheet=${sheetName}&tqx=out:json`;
+
+    const studentId = document.getElementById('studentId').value.trim();
+    if (!studentId) {
+        alert('Vui lòng nhập mã học sinh.');
+        return;
+    }
+
+    try {
+        const response = await fetch(sheetUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        const jsonDataMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+        if (!jsonDataMatch) {
+            throw new Error('Không thể phân tích dữ liệu từ Google Sheet.');
+        }
+
+        const jsonData = JSON.parse(jsonDataMatch[1]);
+        const rows = jsonData.table.rows;
+
+        if (!rows || rows.length === 0) {
+            alert('Google Sheet không chứa dữ liệu lịch sử.');
+            return;
+        }
+
+        // Lọc thông tin theo mã học sinh
+        const studentData = rows.find(row => {
+            const sheetId = (row.c[0]?.v || '').toString().trim();
+            return sheetId === studentId;
+        });
+
+        if (!studentData) {
+            alert(`Không tìm thấy lịch sử cho mã học sinh: ${studentId}`);
+            return;
+        }
+
+        // Hiển thị tiến độ
+        document.getElementById('progressContainer').style.display = 'block';
+        document.getElementById('completedExercises').textContent = studentData.c[2]?.v || '0'; // Cột C: Số bài tập đã làm
+        document.getElementById('averageScore').textContent = studentData.c[3]?.v || '0'; // Cột D: Điểm trung bình
+
+        // Chuyển sang giao diện chính
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu:', error);
+        alert(`Không thể tải tiến độ học tập. Chi tiết lỗi: ${error.message}`);
+    }
+});
 
 });
 
@@ -1085,4 +1219,3 @@ document.getElementById('deleteAllBtn').addEventListener('click', () => {
     </script>
 </body>
 </html>
-

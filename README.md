@@ -268,7 +268,7 @@ button.delete:hover {
     </script>
 </head>
 <body>
-    <h1>ÔN LYỆN TOÁN 9  - THẦY GIÁO TÔN THANH CHƯƠNG</h1>
+    <h1>ÔN LYỆN TOÁN 6  - THẦY GIÁO TÔN THANH CHƯƠNG</h1>
     
     <div id="loginContainer">
         <input type="text" id="studentId" placeholder="Nhập mã học sinh">

@@ -326,7 +326,7 @@ button.delete:hover {
         const SHEET_NAME = 'Toan9';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=&tqx=out:json`;
 
-        const API_KEYS = ['AIzaSyCi4uM-ZzK7pdRgWVhZp7_R7nKTJk6KHFo'];
+        const API_KEYS = ['AIzaSyCuZcb9_WgMq2qrQWzUXlNG0gf2gdrtUUw'];
 
         
         let currentKeyIndex = 0;

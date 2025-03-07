@@ -323,7 +323,7 @@ button.delete:hover {
 
     <script>
         const SHEET_ID = '175acnaYklfdCc_UJ7B3LJgNaUJpfrIENxn6LN76QADM';
-        const SHEET_NAME = 'Toan6';
+        const SHEET_NAME = 'Toan7';
         const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}&tq=&tqx=out:json`;
 
         const API_KEYS = ['AIzaSyCbGFLiaJXsyANfe_TSjCiR4n8VPKF1Eoo'];
